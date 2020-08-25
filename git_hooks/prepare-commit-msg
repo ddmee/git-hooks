@@ -17,10 +17,9 @@ if [[ "$SKIP_HOOK" == 1 ]]; then
 fi
 
 # Run tests when this file changes.
-SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
-printf "\nRunning pre-commit tests tests are passing at $SCRIPTPATH...\n"
+printf "\nRunning pre-commit tests at run_tests.sh\n"
 # Check tests are passing.
-.\run_tests.sh
+./run_tests.sh
 if [[ $? != 0 ]]; then
     printf "\nERROR: detected test failures. Please fix before commiting changes."
     exit 1

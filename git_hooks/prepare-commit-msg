@@ -1,0 +1,29 @@
+#!/bin/sh
+# Providing an environment variable override is helpful, if users need to by-pass your hook for some reason.
+# Set SKIP_HOOK environment variable if you don't want pre-commit tests.
+# Example:
+# > SKIP_HOOK=1
+# > git commit
+# > SKIP_HOOK=0
+# The next 3 parameters are the parameters git supplies to the prepare-commit-msg hook. Different hooks get
+# different parameters.
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+if [[ "$SKIP_HOOK" == 1 ]]; then
+    printf "\nWarning: SKIP_HOOK set, skipping pre-commit hook!\n"
+    exit 0
+fi
+
+# Run tests when this file changes.
+SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
+printf "\nRunning pre-commit tests tests are passing at $SCRIPTPATH...\n"
+# Check tests are passing.
+.\run_tests.sh
+if [[ $? != 0 ]]; then
+    printf "\nERROR: detected test failures. Please fix before commiting changes."
+    exit 1
+fi
+printf "\nPre-commits tests have passed, continuing with commit.\n"
+echo "[Pre-commit tests ran at $(date)]" >> "$COMMIT_MSG_FILE"
